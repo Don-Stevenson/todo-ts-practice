@@ -56,6 +56,7 @@ const PracticeApp: React.FC = () => {
   const [newTodo, setNewTodo] = useState<NewTodo>({ title: '', userId: 1 })
   const [editingTodo, setEditingTodo] = useState<number | null>(null)
   const [editTitle, setEditTitle] = useState('')
+  const [sortBy, setSortBy] = useState<'title' | 'id' | 'completed'>('id')
 
   // API calls
   const fetchData = useCallback(async () => {
@@ -93,22 +94,59 @@ const PracticeApp: React.FC = () => {
     fetchData()
   }, [fetchData])
 
-  // Filtered and searched data
-  const filteredTodos = useMemo(() => {
-    return todos.filter(todo => {
-      const matchesSearch = todo.title
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase())
-      const matchesFilter =
-        filterType === 'all' ||
-        (filterType === 'completed' && todo.completed) ||
-        (filterType === 'pending' && !todo.completed)
-      const matchesUser =
-        selectedUserId === null || todo.userId === selectedUserId
+  // Filter functions
+  const matchesSearch = useCallback(
+    (todo: Todo) => {
+      return todo.title.toLowerCase().includes(searchTerm.toLowerCase())
+    },
+    [searchTerm]
+  )
 
-      return matchesSearch && matchesFilter && matchesUser
-    })
-  }, [todos, searchTerm, filterType, selectedUserId])
+  const matchesFilter = useCallback(
+    (todo: Todo) => {
+      switch (filterType) {
+        case 'completed':
+          return todo.completed
+        case 'pending':
+          return !todo.completed
+        default:
+          return true
+      }
+    },
+    [filterType]
+  )
+
+  const matchesUser = useCallback(
+    (todo: Todo) => {
+      return selectedUserId === null || todo.userId === selectedUserId
+    },
+    [selectedUserId]
+  )
+
+  // Sort function
+  const sortTodos = useCallback(
+    (a: Todo, b: Todo) => {
+      switch (sortBy) {
+        case 'title':
+          return a.title.localeCompare(b.title)
+        case 'completed':
+          return a.completed === b.completed ? 0 : a.completed ? 1 : -1
+        case 'id':
+        default:
+          return a.id - b.id
+      }
+    },
+    [sortBy]
+  )
+
+  // Filtered and sorted todos
+  const filteredTodos = useMemo(() => {
+    return todos
+      .filter(
+        todo => matchesSearch(todo) && matchesFilter(todo) && matchesUser(todo)
+      )
+      .sort(sortTodos)
+  }, [todos, matchesSearch, matchesFilter, matchesUser, sortTodos])
 
   // User statistics
   const userStats = useMemo(() => {
@@ -405,6 +443,17 @@ const PracticeApp: React.FC = () => {
                     {user.name}
                   </option>
                 ))}
+              </select>
+              <select
+                value={sortBy}
+                onChange={e =>
+                  setSortBy(e.target.value as 'title' | 'id' | 'completed')
+                }
+                className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="id">default</option>
+                <option value="title">Sort by Title</option>
+                <option value="completed">Sort by Status</option>
               </select>
             </div>
           </div>
