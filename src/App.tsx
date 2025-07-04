@@ -260,18 +260,11 @@ const PracticeApp: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Tailwind CSS Test Banner */}
-      <div className="bg-green-500 text-white p-4 text-center">
-        <p className="text-lg font-semibold">✅ Tailwind CSS is working!</p>
-        <p className="text-sm">
-          This green banner confirms Tailwind CSS is properly configured
-        </p>
-      </div>
-
-      <div className="max-w-7xl mx-auto p-6">
+    <div className="flex flex-col justify-center items-center min-h-screen bg-gray-50">
+      <div className="max-w-7xl justify-center">
         {/* Header */}
-        <div className="mb-8">
+
+        <div className="p-4 text-white" style={{ marginBottom: '2rem' }}>
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
             React TypeScript Practice App
           </h1>
@@ -288,7 +281,7 @@ const PracticeApp: React.FC = () => {
         )}
 
         {/* User Statistics */}
-        <div className="mb-8">
+        <div className="mb-8" style={{ marginBottom: '2rem' }}>
           <h2 className="text-xl font-semibold mb-4">User Statistics</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {userStats.map(user => (
@@ -322,24 +315,32 @@ const PracticeApp: React.FC = () => {
         </div>
 
         {/* Todo Management */}
-        <div className="bg-white rounded-lg shadow mb-8">
-          <div className="p-6 border-b">
+        <div
+          className="flex flex-col bg-white rounded-lg shadow"
+          style={{ marginBottom: '2rem' }}
+        >
+          <div
+            className="flex flex-col p-6 justify-around gap-2"
+            style={{ marginBottom: '2rem' }}
+          >
             <h2 className="text-xl font-semibold mb-4">Todo Management</h2>
 
             {/* Add Todo Form */}
             <div className="flex gap-4 mb-4">
               <input
+                id="input"
                 type="text"
                 value={newTodo.title}
                 onChange={e =>
                   setNewTodo(prev => ({ ...prev, title: e.target.value }))
                 }
                 placeholder="Enter new todo..."
-                className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                onKeyPress={e => e.key === 'Enter' && addTodo()}
+                className="flex-1 px-5 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                onKeyDown={e => e.key === 'Enter' && addTodo()}
               />
               <select
                 value={newTodo.userId}
+                id="select"
                 onChange={e =>
                   setNewTodo(prev => ({
                     ...prev,
@@ -356,7 +357,7 @@ const PracticeApp: React.FC = () => {
               </select>
               <button
                 onClick={addTodo}
-                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 flex items-center gap-2"
+                className="flex w-1/6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 justify-around items-center gap-2"
               >
                 <Plus className="w-4 h-4" />
                 Add
@@ -420,7 +421,7 @@ const PracticeApp: React.FC = () => {
                   key={todo.id}
                   className={`flex items-center gap-3 p-3 rounded-lg border ${
                     todo.completed
-                      ? 'bg-green-50 border-green-200'
+                      ? 'bg-green-100 border-green-300'
                       : 'bg-gray-50 border-gray-200'
                   }`}
                 >
@@ -442,7 +443,7 @@ const PracticeApp: React.FC = () => {
                         value={editTitle}
                         onChange={e => setEditTitle(e.target.value)}
                         className="w-full px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        onKeyPress={e => e.key === 'Enter' && saveEdit(todo.id)}
+                        onKeyDown={e => e.key === 'Enter' && saveEdit(todo.id)}
                         onBlur={() => saveEdit(todo.id)}
                         autoFocus
                       />
